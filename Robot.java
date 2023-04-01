@@ -3,18 +3,22 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-// These are out imported libraries (DO NOT CHANGE)
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import com.ctre.phoenix.motorcontrol.can.*;
-import com.ctre.phoenix.motorcontrol.TalonFX;
-import com.ctre.motorcontrol.ControlMode;
-
+//import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+//import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.cscore.UsbCamera;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,9 +27,12 @@ import com.ctre.motorcontrol.ControlMode;
  * project.
  */
 public class Robot extends TimedRobot {
-  // private final Timer m_timer = new Timer(); <---- We are currently not using a timer. 
- 
-//DriveTrain Motor Controllers
+  private static final String kDefaultAuto = "Default";
+  private static final String kCustomAuto = "My Auto";
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  //DriveTrain Motor Controllers
 //Do Not Remove
 
 //Left Motor Controller Group
@@ -44,11 +51,19 @@ DifferentialDrive drive = new DifferentialDrive(rightDrive, leftDrive);
 
 //Controller Configuration
 XboxController stick = new XboxController(0);
+//XboxController arm = new XboxController(1);
 
 //Subsystem Configuration
 WPI_TalonFX extendArm = new WPI_TalonFX(2);
+WPI_TalonFX swingArm = new WPI_TalonFX(3);
+MotorController vacuum = new CANSparkMax(1, MotorType.kBrushless);
 
+//Variable for Autonomous
+double autoStart = 0;
+boolean goForAuto = false;
 
+//Fixed position variables
+//String position = "Neutral";
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -56,10 +71,14 @@ WPI_TalonFX extendArm = new WPI_TalonFX(2);
    */
   @Override
   public void robotInit() {
-
-
+    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    m_chooser.addOption("My Auto", kCustomAuto);
+    SmartDashboard.putData("Auto choices", m_chooser);
 
     rightDrive.setInverted(true);
+
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+    UsbCamera camera1 = CameraServer.startAutomaticCapture(1);
 
 
   }
@@ -86,43 +105,158 @@ WPI_TalonFX extendArm = new WPI_TalonFX(2);
    */
   @Override
   public void autonomousInit() {
-   
+    m_autoSelected = m_chooser.getSelected();
+    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    System.out.println("Auto selected: " + m_autoSelected);
+
+     autoStart = Timer.getFPGATimestamp();
+     goForAuto = SmartDashboard.getBoolean("Go For Auto", true);
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
     
+      vacuum.set(1);
+     
+  
+    switch (m_autoSelected) {
+      case kCustomAuto:
+        // Put custom auto code here
+        break;
+      case kDefaultAuto:
+      default:
+        // Put default auto code here
+        break;
+    }
+double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+    if (goForAuto){
+      if (autoTimeElapsed < 1.5){
+        frontLeft.set(.65);
+        rearLeft.set(.65);
+        frontRight.set(-.65);
+        rearRight.set(-.65);
+      }
+      else {
+        frontLeft.set(0);
+        rearLeft.set(0);
+        frontRight.set(0);
+        rearRight.set(0);
+      }
     }
   
-    //This public void gives us the ability to apply a function to the power over time output of our drivetrain motors. 
-    public void exponentialDrive(double left, double right) {
-      leftDrive.set(-(0.09*Math.tan(1.4*left)));
-      rightDrive.set(-(0.09*Math.tan(1.4*right)));
+  }
 
-    }
-  
-  
-    /** This function is called once when teleop is enabled. */
+  /** This function is called once when teleop is enabled. */
+
+  public void exponentialDrive(double left, double right) {
+    leftDrive.set(-(0.02*Math.tan(1.4*left)));
+    rightDrive.set(-(0.02*Math.tan(1.4*right)));
+    swingArm.set(-(0.05*Math.tan(1.4*right)));
+    extendArm.set(-(0.05*Math.tan(1.4*right)));
+  }
+
   @Override
   public void teleopInit() {}
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
     drive.arcadeDrive(-stick.getLeftY(), stick.getRightX());
 
     if (stick.getLeftBumper()){
-      extendArm.set(0.1);
-    }
-    else if (stick.getRightBumper()){
-      extendArm.set(-0.1);
-    }
-    else{
-      extendArm.set(0);
+      extendArm.set(.25);
     }
 
+      else if (stick.getRightBumper()){
+        extendArm.set(-.25);
+      }
+
+        else {
+          extendArm.set(0);
+        }
+
+    if (stick.getAButton()){
+      swingArm.set(0.75);
+    }
+    
+      else if (stick.getBButton()){
+        swingArm.set(-0.75);
+      }
+    
+        else {
+          swingArm.set(0);
+        }
+
+    if (stick.getXButtonPressed()){
+      vacuum.set(1);
+    }
+      else if (stick.getYButtonPressed()){
+        vacuum.set(0);
+      }
+             
+                   
+    // if (stick.getYButton()){
+    //   swingArm.set(-1);
+
+          // try {
+          //   Thread.sleep(1000);  
+          // } catch (InterruptedException e){
+          //   e.printStackTrace();
+          // }
+
+    //       swingArm.set(0);
+    // }
+    // if (stick.getYButtonPressed()){
+    //   if (position == "Neutral"){
+    //     swingArm.set(1.0);
+
+    //     try {
+    //       Thread.sleep(1000);  
+    //     } catch (InterruptedException e){
+    //       e.printStackTrace();
+    //     }
+
+    //     position = "high";
+    //   } else if (position == "Medium"){
+    //     swingArm.set(1.0);
+        
+    //     try {
+    //       Thread.sleep(1000);  
+    //     } catch (InterruptedException e){
+    //         e.printStackTrace();
+    //     }
+
+    //     position = "high";
+    //   } else if (position == "Low"){
+    //     swingArm.set(1.0);
+
+    //     try {
+    //       Thread.sleep(1000);  
+    //     } catch (InterruptedException e){
+    //       e.printStackTrace();
+    //     }
+
+    //     position = "high";
+    //   } else{
+    //     swingArm.set(0);
+    //   }
+    // }else{
+    //   swingArm.set(0);
+  
+    // }
+  
+                  
+
   }
+
+    
+
+
+
+  
+
 
   /** This function is called once when the robot is disabled. */
   @Override
