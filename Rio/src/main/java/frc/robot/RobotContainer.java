@@ -61,7 +61,6 @@ public class RobotContainer {
    * The function which assigns all real subsystems
    */
   private void assignSubsystems() {
-    // TODO swap to real
     DifDrive = new DifferentialDriveReal();
   }
 

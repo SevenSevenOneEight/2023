@@ -163,7 +163,7 @@ simgui.json
 networktables.json
 
 # build specific metadata files
-Rio/src/main/java/frc/robot/Metadata.java
+Rio/src/main/java/frc/robot/BuildMetadata.java
 
 # wpilogs
 *.wpilog
