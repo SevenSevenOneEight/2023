@@ -83,6 +83,14 @@ public class DifferentialDriveSim extends DifferentialDriveSuper {
         return rightEncoder.getDistance();
     }
 
+    @Override
+    public void voltageDrive(double leftVolts, double rightVolts) {
+        // Equivalent of set voltage for simulation
+        leftMotors.set(leftVolts / RobotController.getBatteryVoltage());
+        rightMotors.set(rightVolts / RobotController.getBatteryVoltage());
+        drive.feed();
+    }
+
     private void handleDriveSimulation() {
         driveSim.setInputs(
                 leftMotors.get() * RobotController.getBatteryVoltage(),

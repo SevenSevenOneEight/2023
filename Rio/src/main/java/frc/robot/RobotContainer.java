@@ -1,5 +1,18 @@
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CurvatureDrive;
 import frc.robot.commands.drive.TankDrive;
@@ -14,6 +27,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import java.util.List;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -88,8 +103,50 @@ public class RobotContainer {
    */
   private void configureAutoChooser(@NotNull LoggedDashboardChooser<Command> chooser) {
     chooser.addDefaultOption("Do Nothing", new InstantCommand());
-    chooser.addOption("Spin", new InstantCommand());
-    chooser.addOption("Drive", new InstantCommand());
+    var autoVoltageConstraint =
+            new DifferentialDriveVoltageConstraint(
+                    new SimpleMotorFeedforward(
+                            Constants.DriveConstants.ksVolts,
+                            Constants.DriveConstants.kvVoltSecondsPerMeter,
+                            Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+                    DifDrive.driveKinematics,
+                    10);
+    TrajectoryConfig config =
+            new TrajectoryConfig(
+                    4,
+                    2)
+                    // Add kinematics to ensure max speed is actually obeyed
+                    .setKinematics(DifDrive.driveKinematics)
+                    // Apply the voltage constraint
+                    .addConstraint(autoVoltageConstraint);
+    Trajectory kTrajectory =
+            TrajectoryGenerator.generateTrajectory(
+                    // Start at the origin facing the +X direction
+                    new Pose2d(2, 1, new Rotation2d(0)),
+                    // Pass through these two interior waypoints, making an 's' curve path
+                    List.of(new Translation2d(6, 1), new Translation2d(10, 6)),
+                    // End 3 meters straight ahead of where we started, facing forward
+                    new Pose2d(14, 7, new Rotation2d(0)),
+                    // Pass config
+                    config);
+    RamseteCommand ramseteCommand =
+            new RamseteCommand(
+                    kTrajectory,
+                    DifDrive.poseEstimator::getEstimatedPosition,
+                    new RamseteController(2, 0.7),
+                    new SimpleMotorFeedforward(
+                            Constants.DriveConstants.ksVolts,
+                            Constants.DriveConstants.kvVoltSecondsPerMeter,
+                            Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+                    DifDrive.driveKinematics,
+                    DifDrive::getWheelSpeeds,
+                    new PIDController(2, 1, 0),
+                    new PIDController(2, 1, 0),
+                    // RamseteCommand passes volts to the callback
+                    DifDrive::voltageDrive,
+                    DifDrive);
+    DifDrive.robotWorld.getObject("Trajectory").setTrajectory(kTrajectory);
+    chooser.addOption("Ramsete", ramseteCommand);
   }
 
   /**

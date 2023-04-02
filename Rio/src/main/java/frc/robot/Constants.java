@@ -40,6 +40,7 @@ public final class Constants {
 
         // Simulation
         public static final DCMotor k_driveMotor = DCMotor.getNEO(2);
+        public static final double ksVolts = 0.22;
         public static final double kvVoltSecondsPerMeter = 3;
         public static final double kaVoltSecondsSquaredPerMeter = 0.3;
         public static final double kvVoltSecondsPerRadian = 2;

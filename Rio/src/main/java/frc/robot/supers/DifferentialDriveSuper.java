@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -29,7 +30,7 @@ public abstract class DifferentialDriveSuper extends SubsystemBase {
     // Pose Estimation, Kinematics, & Odometry
     public final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(Constants.DriveConstants.k_trackWidth);
     public final DifferentialDrive drive = new DifferentialDrive(leftMotors, rightMotors);
-    public DifferentialDriveOdometry driveOdometry = new DifferentialDriveOdometry(new Rotation2d(1), 0, 0, new Pose2d(1,1,new Rotation2d(1)));
+    public DifferentialDriveOdometry driveOdometry = new DifferentialDriveOdometry(new Rotation2d(0), 0, 0, new Pose2d(2,1,new Rotation2d(0)));
     public DifferentialDrivePoseEstimator poseEstimator;
 
     // field
@@ -52,6 +53,20 @@ public abstract class DifferentialDriveSuper extends SubsystemBase {
     }
     public Rotation2d getHeading() {
         return Rotation2d.fromDegrees(-NavXMicro.getYaw());
+    }
+    public double getLeftMetersPerSecond() {
+        return leftFront.getEncoder().getVelocity()/Constants.GearboxConstants.k_driveGearing;
+    }
+    public double getRightMetersPerSecond() {
+        return rightFront.getEncoder().getVelocity()/Constants.GearboxConstants.k_driveGearing;
+    }
+    public void voltageDrive(double leftVolts, double rightVolts) {
+        leftMotors.setVoltage(leftVolts);
+        rightMotors.setVoltage(-rightVolts);
+        drive.feed();
+    }
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(getLeftMetersPerSecond(), getRightMetersPerSecond());
     }
     public abstract double getLeftEncoderDistanceMeters();
     public abstract double getRightEncoderDistanceMeters();
