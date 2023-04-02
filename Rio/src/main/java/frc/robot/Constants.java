@@ -1,6 +1,9 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -63,5 +66,35 @@ public final class Constants {
     public static class GearboxConstants {
         // Gearbox Constants
         public static final double k_driveGearing = 8.25;
+    }
+    public static class VisionConstants {
+        // from center of the bot & ground up
+        public final static Transform3d k_cameraToRobot1 =
+                new Transform3d(
+                        new Translation3d(
+                                0.31115,
+                                -0.2413,
+                                0.4953),
+                        new Rotation3d(
+                                0,
+                                0,
+                                0.017));
+        public final static Transform3d k_cameraToRobot2 =
+                new Transform3d(
+                        new Translation3d(
+                                -0.31115,
+                                -0.2413,
+                                0.5207),
+                        new Rotation3d(
+                                0,
+                                0,
+                                3.14));
+        public static final String k_cameraName1 = "front";
+        public static final String k_cameraName2 = "back";
+    }
+    public static class FieldConstants {
+        // Field Constants
+        public static final double k_fieldLength = 16.5;
+        public static final double k_fieldWidth = 8;
     }
 }
