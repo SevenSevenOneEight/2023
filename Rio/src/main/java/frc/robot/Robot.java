@@ -34,43 +34,8 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
-    Logger logger = Logger.getInstance();
-
-    // Record metadata
-    logger.recordMetadata("ProjectName", BuildMetadata.MAVEN_NAME);
-    logger.recordMetadata("BuildDate", BuildMetadata.BUILD_DATE);
-    logger.recordMetadata("GitSHA", BuildMetadata.GIT_SHA);
-    logger.recordMetadata("GitDate", BuildMetadata.GIT_DATE);
-    logger.recordMetadata("GitBranch", BuildMetadata.GIT_BRANCH);
-    switch (BuildMetadata.DIRTY) {
-      case 0:
-        logger.recordMetadata("GitDirty", "All changes committed");
-        break;
-      case 1:
-        logger.recordMetadata("GitDirty", "Uncomitted changes");
-        break;
-      default:
-        logger.recordMetadata("GitDirty", "Unknown");
-        break;
-    }
-
-    // Set up data receivers & replay source
-    // Running on a real robot, log to a USB stick
-    if(Robot.isReal()) {
-      logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
-      logger.addDataReceiver(new NT4Publisher());
-    } else if(Robot.isSimulation()) {
-      logger.addDataReceiver(new WPILOGWriter("logs/"));
-      logger.addDataReceiver(new NT4Publisher());
-    } else {
-      System.out.println("WARNING: Not Sim or Real");
-    }
-
-    // Start AdvantageKit logger
-    logger.start();
-
     robotContainer = new RobotContainer();
-
+    initializeLogging();
     singleton = this;
   }
 
@@ -144,14 +109,52 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    batterySimulation();
+    powerSimulation();
   }
 
-  public void batterySimulation() {
+  private void powerSimulation() {
     double drawCurrent = DifferentialDriveSim.driveSim.getCurrentDrawAmps();
     double loadedVoltage = BatterySim.calculateDefaultBatteryLoadedVoltage(drawCurrent);
     SmartDashboard.putNumber("Sim Power System/Bat. Volt.", loadedVoltage);
     SmartDashboard.putNumber("Sim Power System/Current Draw", drawCurrent);
     RoboRioSim.setVInVoltage(loadedVoltage);
+  }
+
+  private void initializeLogging() {
+    Logger logger = Logger.getInstance();
+
+    // Record metadata
+    logger.recordMetadata("ProjectName", BuildMetadata.MAVEN_NAME);
+    logger.recordMetadata("BuildDate", BuildMetadata.BUILD_DATE);
+    logger.recordMetadata("GitSHA", BuildMetadata.GIT_SHA);
+    logger.recordMetadata("GitDate", BuildMetadata.GIT_DATE);
+    logger.recordMetadata("GitBranch", BuildMetadata.GIT_BRANCH);
+    logger.recordMetadata("Git Version", Integer.toString(BuildMetadata.GIT_REVISION));
+    switch (BuildMetadata.DIRTY) {
+      case 0:
+        logger.recordMetadata("GitDirty", "All changes committed");
+        break;
+      case 1:
+        logger.recordMetadata("GitDirty", "Uncomitted changes");
+        break;
+      default:
+        logger.recordMetadata("GitDirty", "Unknown");
+        break;
+    }
+
+    // Set up data receivers & replay source
+    // Running on a real robot, log to a USB stick
+    if(Robot.isReal()) {
+      logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
+      logger.addDataReceiver(new NT4Publisher());
+    } else if(Robot.isSimulation()) {
+      logger.addDataReceiver(new WPILOGWriter("logs/"));
+      logger.addDataReceiver(new NT4Publisher());
+    } else {
+      System.out.println("WARNING: Not Sim or Real");
+    }
+
+    // Start AdvantageKit logger
+    logger.start();
   }
 }

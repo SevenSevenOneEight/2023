@@ -2,6 +2,7 @@ package frc.robot;
 
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CurvatureDrive;
+import frc.robot.commands.drive.TankDrive;
 import frc.robot.simsystems.DifferentialDriveSim;
 import frc.robot.subsystems.DifferentialDriveReal;
 import frc.robot.supers.DifferentialDriveSuper;
@@ -31,6 +32,7 @@ public class RobotContainer {
   // Commands
   public ArcadeDrive arcadeDrive;
   public CurvatureDrive curvatureDrive;
+  public TankDrive tankDrive;
 
   // Controllers
   private final CommandXboxController pilotController
@@ -71,9 +73,13 @@ public class RobotContainer {
     DifDrive = new DifferentialDriveSim();
   }
 
+  /**
+   * The function which assigns all commands
+   */
   private void configureCommands() {
     arcadeDrive = new ArcadeDrive(DifDrive, pilotController);
     curvatureDrive = new CurvatureDrive(DifDrive, pilotController);
+    tankDrive = new TankDrive(DifDrive, pilotController);
   }
 
   /**

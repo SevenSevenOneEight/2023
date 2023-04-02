@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/2023.iml" filepath="$PROJECT_DIR$/.idea/2023.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Rio.iml" filepath="$PROJECT_DIR$/.idea/modules/Rio.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Rio.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Rio.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Rio.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Rio.test.iml" />
     </modules>
   </component>
 </project>
