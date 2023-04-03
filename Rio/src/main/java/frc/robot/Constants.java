@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -23,6 +24,7 @@ public final class Constants {
     public static class SystemConstants {
         // System Constants
         public static final double k_periodicRate = 0.02;
+        public static final boolean k_simulationLogging = false;
     }
     public static class OIConstants {
         public static final int k_pilotControllerPort = 0;
@@ -53,6 +55,15 @@ public final class Constants {
                 kaVoltSecondsSquaredPerMeter,
                 kvVoltSecondsPerRadian,
                 kaVoltSecondsSquaredPerRadian);
+    }
+    public static class ArmConstants {
+        // Arm Motors
+        public static final int k_extensionID = 4;
+        public static final int k_rotationID = 5;
+        public static final int k_vacuumID = 6;
+        public static final int k_currentLimit = 40;
+        public static final CANSparkMax.IdleMode k_idleMode = CANSparkMax.IdleMode.kBrake;
+        public static final NeutralMode k_neutralMode = NeutralMode.Brake;
     }
     public static class EncoderConstants {
         // Encoder Constants
@@ -89,8 +100,8 @@ public final class Constants {
                                 0,
                                 0,
                                 3.14));
-        public static final String k_cameraName1 = "front";
-        public static final String k_cameraName2 = "back";
+        public static final String k_cameraName1 = "front camera";
+        public static final String k_cameraName2 = "back camera";
     }
     public static class FieldConstants {
         // Field Constants

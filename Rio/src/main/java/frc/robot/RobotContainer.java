@@ -6,18 +6,19 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CurvatureDrive;
 import frc.robot.commands.drive.TankDrive;
+import frc.robot.simsystems.ArmSim;
 import frc.robot.simsystems.DifferentialDriveSim;
+import frc.robot.subsystems.ArmReal;
 import frc.robot.subsystems.DifferentialDriveReal;
+import frc.robot.supers.ArmSuper;
 import frc.robot.supers.DifferentialDriveSuper;
 import org.jetbrains.annotations.NotNull;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -42,12 +43,14 @@ public class RobotContainer {
   public static RobotContainer singleton;
 
   // Subsystem Supers
-  private DifferentialDriveSuper DifDrive;
+  private DifferentialDriveSuper differentialDrive;
+  private ArmSuper arm;
 
   // Commands
   public ArcadeDrive arcadeDrive;
   public CurvatureDrive curvatureDrive;
   public TankDrive tankDrive;
+  public Command autoCommand;
 
   // Controllers
   private final CommandXboxController pilotController
@@ -78,23 +81,25 @@ public class RobotContainer {
    * The function which assigns all real subsystems
    */
   private void assignSubsystems() {
-    DifDrive = new DifferentialDriveReal();
+    differentialDrive = new DifferentialDriveReal();
+    arm = new ArmReal();
   }
 
   /**
    * The function which assigns all simulated subsystems
    */
   private void assignSimSystems() {
-    DifDrive = new DifferentialDriveSim();
+    differentialDrive = new DifferentialDriveSim();
+    arm = new ArmSim();
   }
 
   /**
    * The function which assigns all commands
    */
   private void configureCommands() {
-    arcadeDrive = new ArcadeDrive(DifDrive, pilotController);
-    curvatureDrive = new CurvatureDrive(DifDrive, pilotController);
-    tankDrive = new TankDrive(DifDrive, pilotController);
+    arcadeDrive = new ArcadeDrive(differentialDrive, pilotController);
+    curvatureDrive = new CurvatureDrive(differentialDrive, pilotController);
+    tankDrive = new TankDrive(differentialDrive, pilotController);
   }
 
   /**
@@ -109,14 +114,14 @@ public class RobotContainer {
                             Constants.DriveConstants.ksVolts,
                             Constants.DriveConstants.kvVoltSecondsPerMeter,
                             Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
-                    DifDrive.driveKinematics,
+                    differentialDrive.driveKinematics,
                     10);
     TrajectoryConfig config =
             new TrajectoryConfig(
                     4,
                     2)
                     // Add kinematics to ensure max speed is actually obeyed
-                    .setKinematics(DifDrive.driveKinematics)
+                    .setKinematics(differentialDrive.driveKinematics)
                     // Apply the voltage constraint
                     .addConstraint(autoVoltageConstraint);
     Trajectory kTrajectory =
@@ -132,20 +137,20 @@ public class RobotContainer {
     RamseteCommand ramseteCommand =
             new RamseteCommand(
                     kTrajectory,
-                    DifDrive.poseEstimator::getEstimatedPosition,
+                    differentialDrive.poseEstimator::getEstimatedPosition,
                     new RamseteController(2, 0.7),
                     new SimpleMotorFeedforward(
                             Constants.DriveConstants.ksVolts,
                             Constants.DriveConstants.kvVoltSecondsPerMeter,
                             Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
-                    DifDrive.driveKinematics,
-                    DifDrive::getWheelSpeeds,
+                    differentialDrive.driveKinematics,
+                    differentialDrive::getWheelSpeeds,
                     new PIDController(2, 1, 0),
                     new PIDController(2, 1, 0),
                     // RamseteCommand passes volts to the callback
-                    DifDrive::voltageDrive,
-                    DifDrive);
-    DifDrive.robotWorld.getObject("Trajectory").setTrajectory(kTrajectory);
+                    differentialDrive::voltageDrive,
+                    differentialDrive);
+    differentialDrive.robotWorld.getObject("Trajectory").setTrajectory(kTrajectory);
     chooser.addOption("Ramsete", ramseteCommand);
   }
 
@@ -159,11 +164,9 @@ public class RobotContainer {
   }
 
   /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
+   * Use this to set the autonomous command
    */
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
+  public void setAutonomousCommand() {
+    autoCommand = autoChooser.get();
   }
 }

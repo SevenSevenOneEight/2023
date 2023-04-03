@@ -13,8 +13,9 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import static frc.robot.Constants.SystemConstants.k_simulationLogging;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private Command autonomousCommand;
   private RobotContainer robotContainer;
   public Robot singleton;
 
@@ -43,6 +43,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
   }
 
   /** This function is called once when the robot is disabled. */
@@ -61,11 +62,11 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    robotContainer.setAutonomousCommand();
 
     // schedule the autonomous command (example)
-    if (autonomousCommand != null) {
-      autonomousCommand.schedule();
+    if (robotContainer.autoCommand != null) {
+      robotContainer.autoCommand.schedule();
     }
   }
 
@@ -77,8 +78,8 @@ public class Robot extends LoggedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    if (autonomousCommand != null) {
-      autonomousCommand.cancel();
+    if (robotContainer.autoCommand != null) {
+      robotContainer.autoCommand.cancel();
     }
     CommandScheduler.getInstance().schedule(robotContainer.arcadeDrive);
   }
@@ -135,7 +136,7 @@ public class Robot extends LoggedRobot {
         logger.recordMetadata("GitDirty", "All changes committed");
         break;
       case 1:
-        logger.recordMetadata("GitDirty", "Uncomitted changes");
+        logger.recordMetadata("GitDirty", "Uncommitted changes");
         break;
       default:
         logger.recordMetadata("GitDirty", "Unknown");
@@ -147,7 +148,7 @@ public class Robot extends LoggedRobot {
     if(Robot.isReal()) {
       logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
       logger.addDataReceiver(new NT4Publisher());
-    } else if(Robot.isSimulation()) {
+    } else if(Robot.isSimulation() && k_simulationLogging) {
       logger.addDataReceiver(new WPILOGWriter("logs/"));
       logger.addDataReceiver(new NT4Publisher());
     } else {

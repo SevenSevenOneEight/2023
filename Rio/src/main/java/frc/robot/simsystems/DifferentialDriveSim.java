@@ -38,6 +38,14 @@ public class DifferentialDriveSim extends DifferentialDriveSuper {
         handleDriveSimulation();
         handleSensorSimulation();
         renderFieldData();
+        calculateVisionUncertainty(poseEstimator.getEstimatedPosition().getX(),
+                poseEstimator.getEstimatedPosition().getRotation(),
+                Constants.VisionConstants.k_cameraToRobot1.getRotation().toRotation2d(),
+                Constants.VisionConstants.k_cameraName1);
+        calculateVisionUncertainty(poseEstimator.getEstimatedPosition().getX(),
+                poseEstimator.getEstimatedPosition().getRotation(),
+                Constants.VisionConstants.k_cameraToRobot2.getRotation().toRotation2d(),
+                Constants.VisionConstants.k_cameraName2);
     }
 
     private void setupEncoders() {
@@ -120,7 +128,7 @@ public class DifferentialDriveSim extends DifferentialDriveSuper {
         robotWorld.setRobotPose(poseEstimator.getEstimatedPosition());
         trueWorld.setRobotPose(driveSim.getPose());
 
-        SmartDashboard.putData("Robot World", robotWorld);
-        SmartDashboard.putData("True World", trueWorld);
+        SmartDashboard.putData("Rendering/Robot World", robotWorld);
+        SmartDashboard.putData("Rendering/True World", trueWorld);
     }
 }

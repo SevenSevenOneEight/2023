@@ -73,11 +73,11 @@ public abstract class DifferentialDriveSuper extends SubsystemBase {
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
         return new DifferentialDriveWheelSpeeds(getLeftMetersPerSecond(), getRightMetersPerSecond());
     }
-    public Matrix<N3, N1> calculateVisionUncertainty(double poseX, Rotation2d heading, Rotation2d cameraYaw) {
-        double maximumUncertainty = 2;
+    public Matrix<N3, N1> calculateVisionUncertainty(double poseX, Rotation2d heading, Rotation2d cameraYaw, String cameraName) {
+        double maximumUncertainty = 3;
         double minimumUncertainty = 0.02;
-        double a = 9;
-        double b = -2.2;
+        double a = 6;
+        double b = -1.3;
         Rotation2d cameraWorldYaw = cameraYaw.rotateBy(heading);
         boolean isCameraFacingFieldSideTags;
         boolean facingRedAlliance;
@@ -86,19 +86,11 @@ public abstract class DifferentialDriveSuper extends SubsystemBase {
         if(-90 < cameraWorldYaw.getDegrees() && cameraWorldYaw.getDegrees() < 90) {
             // camera facing towards red alliance
             facingRedAlliance = true;
-            if(poseX > Constants.FieldConstants.k_fieldLength/2) {
-                isCameraFacingFieldSideTags = true;
-            } else {
-                isCameraFacingFieldSideTags = false;
-            }
+            isCameraFacingFieldSideTags = poseX > Constants.FieldConstants.k_fieldLength / 2;
         } else {
             // camera facing towards blue alliance
             facingRedAlliance = false;
-            if(poseX < Constants.FieldConstants.k_fieldLength/2) {
-                isCameraFacingFieldSideTags = true;
-            } else {
-                isCameraFacingFieldSideTags = false;
-            }
+            isCameraFacingFieldSideTags = poseX < Constants.FieldConstants.k_fieldLength / 2;
         }
 
         if(isCameraFacingFieldSideTags) {
@@ -110,7 +102,7 @@ public abstract class DifferentialDriveSuper extends SubsystemBase {
             }
         } else {
             // uncertainty high
-            if(facingRedAlliance) {
+            if(!facingRedAlliance) {
                 distanceFromTagSide = poseX;
             } else {
                 distanceFromTagSide = Constants.FieldConstants.k_fieldLength - poseX;
@@ -118,7 +110,9 @@ public abstract class DifferentialDriveSuper extends SubsystemBase {
         }
         double positionUncertainty = ((maximumUncertainty-minimumUncertainty)/(1+Math.pow(Math.E, (a+(b*distanceFromTagSide)))))+minimumUncertainty;
 
-        SmartDashboard.putNumber("Vision Uncertainty", positionUncertainty);
+        SmartDashboard.putNumber("Debug/Cameras/"+cameraName+"/Distance From Tag Side", distanceFromTagSide);
+        SmartDashboard.putNumber("Debug/Cameras/"+cameraName+"/Vision Uncertainty", positionUncertainty);
+        SmartDashboard.putBoolean("Debug/Cameras/"+cameraName+"/Facing Red Alliance", facingRedAlliance);
 
         return VecBuilder.fill(positionUncertainty,positionUncertainty,positionUncertainty*3);
     }

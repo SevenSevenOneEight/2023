@@ -1,10 +1,7 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.PhotonVision.PhotonCameraWrapper1;
@@ -16,9 +13,8 @@ import java.util.Optional;
 
 public class DifferentialDriveReal extends DifferentialDriveSuper {
     // TODO swap to single class
-    private PhotonCameraWrapper1 photonPoseEstimator1 = new PhotonCameraWrapper1();
-    private PhotonCameraWrapper2 photonPoseEstimator2 = new PhotonCameraWrapper2();
-    Matrix<N3, N1> certainty;
+    private final PhotonCameraWrapper1 photonPoseEstimator1 = new PhotonCameraWrapper1();
+    private final PhotonCameraWrapper2 photonPoseEstimator2 = new PhotonCameraWrapper2();
     public DifferentialDriveReal() {
         configureMotors();
         setupDrive();
@@ -62,13 +58,15 @@ public class DifferentialDriveReal extends DifferentialDriveSuper {
         if(result1.isPresent()) {
             EstimatedRobotPose estimatedPose = result1.get();
             poseEstimator.setVisionMeasurementStdDevs(calculateVisionUncertainty(poseX, poseHeading,
-                    Constants.VisionConstants.k_cameraToRobot1.getRotation().toRotation2d()));
+                    Constants.VisionConstants.k_cameraToRobot1.getRotation().toRotation2d(),
+                    Constants.VisionConstants.k_cameraName1));
             poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
         }
         if(result2.isPresent()) {
             EstimatedRobotPose estimatedPose = result2.get();
             poseEstimator.setVisionMeasurementStdDevs(calculateVisionUncertainty(poseX, poseHeading,
-                    Constants.VisionConstants.k_cameraToRobot2.getRotation().toRotation2d()));
+                    Constants.VisionConstants.k_cameraToRobot2.getRotation().toRotation2d(),
+                    Constants.VisionConstants.k_cameraName2));
             poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
         }
     }
@@ -76,6 +74,6 @@ public class DifferentialDriveReal extends DifferentialDriveSuper {
     public void renderFieldData() {
         robotWorld.setRobotPose(poseEstimator.getEstimatedPosition());
 
-        SmartDashboard.putData("Robot World", robotWorld);
+        SmartDashboard.putData("Rendering/Robot World", robotWorld);
     }
 }

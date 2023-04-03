@@ -7,12 +7,12 @@ public final class BuildMetadata {
   public static final String MAVEN_GROUP = "";
   public static final String MAVEN_NAME = "Rio";
   public static final String VERSION = "unspecified";
-  public static final int GIT_REVISION = 11;
-  public static final String GIT_SHA = "e58b0ba1520c13c14459f7528fc2fc012bf2e62c";
-  public static final String GIT_DATE = "2023-04-02 15:40:27 EDT";
+  public static final int GIT_REVISION = 13;
+  public static final String GIT_SHA = "e4319703f4a9efe3eeba1739059f45e0abdcb56d";
+  public static final String GIT_DATE = "2023-04-02 17:50:20 EDT";
   public static final String GIT_BRANCH = "Refactor";
-  public static final String BUILD_DATE = "2023-04-02 16:51:33 EDT";
-  public static final long BUILD_UNIX_TIME = 1680468693490L;
+  public static final String BUILD_DATE = "2023-04-02 21:24:01 EDT";
+  public static final long BUILD_UNIX_TIME = 1680485041143L;
   public static final int DIRTY = 1;
 
   private BuildMetadata(){}
