@@ -11,6 +11,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.robot.commands.ArmCommand;
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CurvatureDrive;
 import frc.robot.commands.drive.TankDrive;
@@ -50,6 +51,7 @@ public class RobotContainer {
   public ArcadeDrive arcadeDrive;
   public CurvatureDrive curvatureDrive;
   public TankDrive tankDrive;
+  public ArmCommand armCommand;
   public Command autoCommand;
 
   // Controllers
@@ -100,6 +102,7 @@ public class RobotContainer {
     arcadeDrive = new ArcadeDrive(differentialDrive, pilotController);
     curvatureDrive = new CurvatureDrive(differentialDrive, pilotController);
     tankDrive = new TankDrive(differentialDrive, pilotController);
+    armCommand = new ArmCommand(arm, operatorController);
   }
 
   /**

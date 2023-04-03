@@ -58,12 +58,17 @@ public final class Constants {
     }
     public static class ArmConstants {
         // Arm Motors
-        public static final int k_extensionID = 4;
-        public static final int k_rotationID = 5;
+        public static final int k_rotationID = 4;
+        public static final int k_extensionID = 5;
         public static final int k_vacuumID = 6;
         public static final int k_currentLimit = 40;
         public static final CANSparkMax.IdleMode k_idleMode = CANSparkMax.IdleMode.kBrake;
         public static final NeutralMode k_neutralMode = NeutralMode.Brake;
+        public static final double k_rotationHeight = 0.7;
+        public static final double k_minRotation = -90;
+        public static final double k_maxRotation = 70;
+        public static final double k_minExtension = 0.35;
+        public static final double k_maxExtension = 0.8;
     }
     public static class EncoderConstants {
         // Encoder Constants

@@ -17,6 +17,7 @@ public class DifferentialDriveReal extends DifferentialDriveSuper {
     private final PhotonCameraWrapper2 photonPoseEstimator2 = new PhotonCameraWrapper2();
     public DifferentialDriveReal() {
         configureMotors();
+        resetEncoders();
         setupDrive();
     }
 
@@ -24,6 +25,10 @@ public class DifferentialDriveReal extends DifferentialDriveSuper {
     public void periodic() {
         updatePoseEstimator();
         renderFieldData();
+    }
+    public void resetEncoders() {
+        leftFront.getEncoder().setPosition(0);
+        rightFront.getEncoder().setPosition(0);
     }
     @Override
     public double getLeftEncoderDistanceMeters() {

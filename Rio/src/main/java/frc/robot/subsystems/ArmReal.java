@@ -4,7 +4,7 @@ import frc.robot.supers.ArmSuper;
 
 public class ArmReal extends ArmSuper {
     public ArmReal() {
-        configureMotors();
+        super();
     }
 
     @Override
