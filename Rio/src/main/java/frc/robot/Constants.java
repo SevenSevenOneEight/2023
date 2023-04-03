@@ -57,13 +57,21 @@ public final class Constants {
                 kaVoltSecondsSquaredPerRadian);
     }
     public static class ArmConstants {
-        // Arm Motors
+        // Arm Motors & PIDs
         public static final int k_rotationID = 4;
+        public static final double k_rotationP = 0.0001;
+        public static final double k_rotationI = 0;
+        public static final double k_rotationD = 0;
         public static final int k_extensionID = 5;
+        public static final double k_extensionP = 0.0001;
+        public static final double k_extensionI = 0;
+        public static final double k_extensionD = 0;
         public static final int k_vacuumID = 6;
-        public static final int k_currentLimit = 40;
+        public static final int k_vacuumCurrentLimit = 40;
         public static final CANSparkMax.IdleMode k_idleMode = CANSparkMax.IdleMode.kBrake;
         public static final NeutralMode k_neutralMode = NeutralMode.Brake;
+
+        // Arm Target Constrains
         public static final double k_rotationHeight = 0.7;
         public static final double k_minRotation = -90;
         public static final double k_maxRotation = 70;

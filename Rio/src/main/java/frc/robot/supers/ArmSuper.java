@@ -28,7 +28,7 @@ public abstract class ArmSuper extends SubsystemBase {
     }
 
     // Arm Target Position Mechanism
-    public Mechanism2d targetArmMechanism = new Mechanism2d(3, 1.5);
+    public final Mechanism2d targetArmMechanism = new Mechanism2d(3, 1.5);
     public MechanismLigament2d targetExtensionMechanism;
     public MechanismLigament2d targetRotationMechanism;
     public MechanismLigament2d vacuumIntake;
@@ -50,11 +50,8 @@ public abstract class ArmSuper extends SubsystemBase {
         rotation.setNeutralMode(Constants.ArmConstants.k_neutralMode);
         vacuum.setIdleMode(Constants.ArmConstants.k_idleMode);
 
-        vacuum.setSmartCurrentLimit(Constants.ArmConstants.k_currentLimit);
+        vacuum.setSmartCurrentLimit(Constants.ArmConstants.k_vacuumCurrentLimit);
 
-        /*eContinuousCurrentLimitAmps(360),
-	    ePeakCurrentLimitMs(361),
-	    ePeakCurrentLimitAmps(362),*/
         extension.configForwardSoftLimitEnable(true);
         extension.configSetParameter(360, 40, 0, 0, 0);
         extension.configSetParameter(361, 100, 0, 0, 0);
@@ -89,7 +86,7 @@ public abstract class ArmSuper extends SubsystemBase {
                 targetExtensionMechanism.getLength() + armMechanism.extension
         ));
     }
-    public void renderMechanisms() {
+    public void renderTargetArm() {
         SmartDashboard.putData("Rendering/Target Arm", targetArmMechanism);
     }
 }
