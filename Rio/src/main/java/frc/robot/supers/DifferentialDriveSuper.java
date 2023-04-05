@@ -119,6 +119,10 @@ public abstract class DifferentialDriveSuper extends SubsystemBase {
 
         return VecBuilder.fill(positionUncertainty,positionUncertainty,positionUncertainty*3);
     }
+    public void setPose(Pose2d pose) {
+        driveOdometry.resetPosition(getHeading(), 0, 0, pose);
+        poseEstimator.resetPosition(getHeading(), 0, 0, pose);
+    }
     public abstract double getLeftEncoderDistanceMeters();
     public abstract double getRightEncoderDistanceMeters();
     public abstract void renderFieldData();

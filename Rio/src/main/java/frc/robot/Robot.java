@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,6 +33,7 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     robotContainer = new RobotContainer();
     initializeLogging();
+    PathPlannerServer.startServer(5811);
     singleton = this;
   }
 
@@ -148,8 +150,8 @@ public class Robot extends LoggedRobot {
     } else if(Robot.isSimulation() && k_simulationLogging) {
       logger.addDataReceiver(new WPILOGWriter("logs/"));
       logger.addDataReceiver(new NT4Publisher());
-    } else {
-      System.out.println("WARNING: Not Sim or Real");
+    } else if(Robot.isSimulation() && !k_simulationLogging) {
+      logger.addDataReceiver(new NT4Publisher());
     }
 
     // Start AdvantageKit logger

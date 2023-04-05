@@ -4,6 +4,7 @@ import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
@@ -98,6 +99,13 @@ public class DifferentialDriveSim extends DifferentialDriveSuper {
         leftMotors.set(leftVolts / RobotController.getBatteryVoltage());
         rightMotors.set(rightVolts / RobotController.getBatteryVoltage());
         drive.feed();
+    }
+
+    @Override
+    public void setPose(Pose2d pose) {
+        driveSim.setPose(pose);
+        driveOdometry.resetPosition(getHeading(), 0, 0, pose);
+        poseEstimator.resetPosition(getHeading(), 0, 0, pose);
     }
 
     private void handleDriveSimulation() {

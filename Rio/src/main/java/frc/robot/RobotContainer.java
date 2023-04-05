@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
+import frc.robot.autos.pathPlannerAutoHandler;
 import frc.robot.commands.ArmCommand;
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CurvatureDrive;
@@ -63,7 +64,7 @@ public class RobotContainer {
           = new CommandXboxController(Constants.OIConstants.k_operatorControllerPort);
 
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto Choices");
+  public static LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto Choices");
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -76,8 +77,8 @@ public class RobotContainer {
     }
     configureCommands();
     configureAutoChooser(autoChooser);
+    new pathPlannerAutoHandler(autoChooser, "Test Path", differentialDrive);
     configureButtonBindings();
-
     singleton = this;
   }
 
@@ -113,7 +114,10 @@ public class RobotContainer {
    */
   private void configureAutoChooser(@NotNull LoggedDashboardChooser<Command> chooser) {
     chooser.addDefaultOption("Do Nothing", new InstantCommand());
-    var autoVoltageConstraint =
+    chooser.addOption("Ramsete", createTestRamseteCommand());
+  }
+  private RamseteCommand createTestRamseteCommand() {
+    DifferentialDriveVoltageConstraint autoVoltageConstraint =
             new DifferentialDriveVoltageConstraint(
                     new SimpleMotorFeedforward(
                             Constants.DriveConstants.ksVolts,
@@ -139,24 +143,21 @@ public class RobotContainer {
                     new Pose2d(14, 7, new Rotation2d(0)),
                     // Pass config
                     config);
-    RamseteCommand ramseteCommand =
-            new RamseteCommand(
-                    kTrajectory,
-                    differentialDrive.poseEstimator::getEstimatedPosition,
-                    new RamseteController(2, 0.7),
-                    new SimpleMotorFeedforward(
-                            Constants.DriveConstants.ksVolts,
-                            Constants.DriveConstants.kvVoltSecondsPerMeter,
-                            Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
-                    differentialDrive.driveKinematics,
-                    differentialDrive::getWheelSpeeds,
-                    new PIDController(2, 1, 0),
-                    new PIDController(2, 1, 0),
-                    // RamseteCommand passes volts to the callback
-                    differentialDrive::voltageDrive,
-                    differentialDrive);
-    differentialDrive.robotWorld.getObject("Trajectory").setTrajectory(kTrajectory);
-    chooser.addOption("Ramsete", ramseteCommand);
+    return new RamseteCommand(
+            kTrajectory,
+            differentialDrive.poseEstimator::getEstimatedPosition,
+            new RamseteController(2, 0.7),
+            new SimpleMotorFeedforward(
+                    Constants.DriveConstants.ksVolts,
+                    Constants.DriveConstants.kvVoltSecondsPerMeter,
+                    Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+            differentialDrive.driveKinematics,
+            differentialDrive::getWheelSpeeds,
+            new PIDController(2, 1, 0),
+            new PIDController(2, 1, 0),
+            // RamseteCommand passes volts to the callback
+            differentialDrive::voltageDrive,
+            differentialDrive);
   }
 
   /**
