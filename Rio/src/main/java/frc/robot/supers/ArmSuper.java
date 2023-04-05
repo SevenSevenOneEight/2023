@@ -2,13 +2,16 @@ package frc.robot.supers;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
 import frc.robot.Constants;
 
 public abstract class ArmSuper extends SubsystemBase {
@@ -21,6 +24,7 @@ public abstract class ArmSuper extends SubsystemBase {
     public static class ArmPosition {
         public double rotation;
         public double extension;
+
         public ArmPosition(double rotation, double extension) {
             this.rotation = rotation;
             this.extension = extension;
@@ -61,6 +65,7 @@ public abstract class ArmSuper extends SubsystemBase {
         rotation.configSetParameter(361, 100, 0, 0, 0);
         rotation.configSetParameter(362, 60, 0, 0, 0);
     }
+
     public void configureTargetArmMechanism() {
         MechanismRoot2d armRoot = targetArmMechanism.getRoot("arm", 1.525, Constants.ArmConstants.k_rotationHeight);
         targetRotationMechanism = armRoot.append(
@@ -70,6 +75,7 @@ public abstract class ArmSuper extends SubsystemBase {
         vacuumIntake = targetExtensionMechanism.append(
                 new MechanismLigament2d("vacuum", 0.18, 90, 4, new Color8Bit(40, 40, 50)));
     }
+
     public void setTargetPosition(ArmPosition armMechanism) {
         targetRotationMechanism.setAngle(Math.min(
                 Math.max(Constants.ArmConstants.k_minRotation, armMechanism.rotation),
@@ -80,12 +86,14 @@ public abstract class ArmSuper extends SubsystemBase {
                 Constants.ArmConstants.k_maxExtension)
         );
     }
+
     public void adjustTargetPosition(ArmPosition armMechanism) {
         setTargetPosition(new ArmPosition(
                 targetRotationMechanism.getAngle() + armMechanism.rotation,
                 targetExtensionMechanism.getLength() + armMechanism.extension
         ));
     }
+
     public void renderTargetArm() {
         SmartDashboard.putData("Rendering/Target Arm", targetArmMechanism);
     }
