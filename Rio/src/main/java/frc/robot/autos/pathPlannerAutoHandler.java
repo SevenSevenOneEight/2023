@@ -25,15 +25,13 @@ import static edu.wpi.first.wpilibj.Filesystem.getDeployDirectory;
 
 public class pathPlannerAutoHandler {
     LoggedDashboardChooser<Command> autoChooser;
-    private final String autoName;
     private final DifferentialDriveSuper differentialDrive;
     RamseteAutoBuilder autoBuilder;
     HashMap<String, Command> eventMap = new HashMap<>();
 
-    public pathPlannerAutoHandler(LoggedDashboardChooser<Command> chooser, String autoName, DifferentialDriveSuper differentialDrive) {
+    public pathPlannerAutoHandler(LoggedDashboardChooser<Command> chooser, DifferentialDriveSuper differentialDrive) {
         this.differentialDrive = differentialDrive;
         this.autoChooser = chooser;
-        this.autoName = autoName;
         System.out.println("WARNING: Path Planner Auto Handler is experimental and may not work as expected");
         System.out.println("WARNING: Path Planner Auto Handler currently uses a different coordinate frame than the rest of the robot code.");
         configureAuto();

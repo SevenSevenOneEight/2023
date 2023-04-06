@@ -81,7 +81,7 @@ public class Robot extends LoggedRobot {
       robotContainer.autoCommand.cancel();
     }
     CommandScheduler.getInstance().schedule(robotContainer.arcadeDrive);
-    CommandScheduler.getInstance().schedule(robotContainer.armCommand);
+    CommandScheduler.getInstance().schedule(robotContainer.armCommandRaw);
   }
 
   /** This function is called periodically during operator control. */

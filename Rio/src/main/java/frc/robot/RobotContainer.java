@@ -17,8 +17,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.pathPlannerAutoHandler;
-import frc.robot.commands.ArmCommand;
+import frc.robot.commands.arm.ArmCommandPID;
+import frc.robot.commands.arm.ArmCommandRaw;
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CurvatureDrive;
 import frc.robot.commands.drive.TankDrive;
@@ -54,7 +57,8 @@ public class RobotContainer {
   public ArcadeDrive arcadeDrive;
   public CurvatureDrive curvatureDrive;
   public TankDrive tankDrive;
-  public ArmCommand armCommand;
+  public ArmCommandPID armCommandPID;
+  public ArmCommandRaw armCommandRaw;
   public Command autoCommand;
 
   // Controllers
@@ -77,7 +81,7 @@ public class RobotContainer {
     }
     configureCommands();
     configureAutoChooser(autoChooser);
-    new pathPlannerAutoHandler(autoChooser, "Love you", differentialDrive);
+    new pathPlannerAutoHandler(autoChooser, differentialDrive);
     configureButtonBindings();
     singleton = this;
   }
@@ -105,7 +109,8 @@ public class RobotContainer {
     arcadeDrive = new ArcadeDrive(differentialDrive, pilotController);
     curvatureDrive = new CurvatureDrive(differentialDrive, pilotController);
     tankDrive = new TankDrive(differentialDrive, pilotController);
-    armCommand = new ArmCommand(arm, operatorController);
+    armCommandPID = new ArmCommandPID(arm, operatorController);
+    armCommandRaw = new ArmCommandRaw(arm, operatorController);
   }
 
   /**
@@ -167,6 +172,10 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    Trigger bButton = new JoystickButton(operatorController.getHID(), 5);
+    bButton.onTrue(armCommandRaw);
+    Trigger rightBumper = new JoystickButton(operatorController.getHID(), 6);
+    rightBumper.onTrue(armCommandPID);
   }
 
   /**
