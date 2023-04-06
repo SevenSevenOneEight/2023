@@ -60,6 +60,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
+    CommandScheduler.getInstance().cancelAll();
     robotContainer.setAutonomousCommand();
 
     // schedule the autonomous command (example)

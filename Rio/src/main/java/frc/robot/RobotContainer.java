@@ -77,7 +77,7 @@ public class RobotContainer {
     }
     configureCommands();
     configureAutoChooser(autoChooser);
-    new pathPlannerAutoHandler(autoChooser, "Test Path", differentialDrive);
+    new pathPlannerAutoHandler(autoChooser, "Love you", differentialDrive);
     configureButtonBindings();
     singleton = this;
   }
