@@ -22,7 +22,7 @@ public class ArmCommandRaw extends CommandBase {
         } else if(operatorController.getHID().getBButtonPressed()) {
             arm.vacuum.set(0);
         }
-        arm.rotation.set(-1.5 * operatorController.getLeftY());
-        arm.extension.set(-0.01 * operatorController.getRightY());
+        arm.rotation.set(-operatorController.getLeftY());
+        arm.extension.set(-operatorController.getRightY());
     }
 }
