@@ -80,6 +80,7 @@ public class Robot extends LoggedRobot {
     if (robotContainer.autoCommand != null) {
       robotContainer.autoCommand.cancel();
     }
+    // to change drive just switch the line below from .arcadeDrive to another option
     CommandScheduler.getInstance().schedule(robotContainer.arcadeDrive);
     CommandScheduler.getInstance().schedule(robotContainer.armCommandRaw);
   }

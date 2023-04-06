@@ -160,7 +160,6 @@ public class RobotContainer {
             differentialDrive::getWheelSpeeds,
             new PIDController(2, 1, 0),
             new PIDController(2, 1, 0),
-            // RamseteCommand passes volts to the callback
             differentialDrive::voltageDrive,
             differentialDrive);
   }
