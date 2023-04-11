@@ -1,5 +1,6 @@
 # 7718's 2023 Code
 7718's code for the 2023 FRC season, includes apriltag detection using PhotonVision, easy changes to the auto using PathPlanner, and more.
+Older code is in the Main branch, new code explained above can be found in the Refactor branch.
 ## Key Aspects
 
 
@@ -39,5 +40,6 @@ Super simple, just download libraries, assign can ID's and edit/add/remove anyth
 
  Related to NE's Java framework accesible at https://github.com/NE-Robotics/Java-Framework
  
+  As mentioned above, the older code is in the Main branch, new code explained above can be found in the Refactor branch.
  
  Thanks Daniel! :)
