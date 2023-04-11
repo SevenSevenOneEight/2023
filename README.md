@@ -1,5 +1,5 @@
 # 7718's 2023 Code
-7718's code for the 2023 FRC season, includes apriltag support using PhotonVision, easy changes to the auto using PathPlanner, and more.
+7718's code for the 2023 FRC season, includes apriltag detection using PhotonVision, easy changes to the auto using PathPlanner, and more.
 ## Key Aspects
 
 
